@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevShowcase - Share Your Projects</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+primary: '#6366f1',
+secondary: '#f59e0b'
+},
+borderRadius: {
+'none': '0px',
+'sm': '4px',
+DEFAULT: '8px',
+'md': '12px',
+'lg': '16px',
+'xl': '20px',
+'2xl': '24px',
+'3xl': '32px',
+'full': '9999px',
+'button': '8px'
+}
+},
+fontFamily: {
+sans: ['Inter', 'sans-serif']
+}
+}
+}
+</script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+.masonry-grid {
+column-count: 3;
+column-gap: 1.5rem;
+}
+.masonry-item {
+break-inside: avoid;
+margin-bottom: 1.5rem;
+}
+.project-context-menu {
+animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(-10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 1024px) {
+.masonry-grid {
+column-count: 2;
+}
+}
+@media (max-width: 640px) {
+.masonry-grid {
+column-count: 1;
+}
+}
+</style>
+</head>
+<body class="bg-gray-50 font-sans">
+<nav class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between h-16">
+<div class="flex items-center">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary">NmocChan</a>
+<div class="hidden md:flex items-center space-x-8 ml-10">
+<a href="#" class="text-gray-900 hover:text-primary">Home</a>
+<a href="#" class="text-gray-900 hover:text-primary">Projects</a>
+<a href="#" class="text-gray-900 hover:text-primary">About</a>
+<a href="#" class="text-gray-900 hover:text-primary">Contact</a>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<input type="text" id="searchInput" placeholder="Search projects..." class="w-64 pl-10 pr-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm">
+<div class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+<button id="clearSearch" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 hidden">
+<i class="ri-close-line"></i>
+</button>
+</div>
+<button class="relative w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100">
+<i class="ri-notification-3-line text-gray-700"></i>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+</button>
+<div class="relative" id="profileDropdown">
+<button class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer">
+<img src="https://public.readdy.ai/ai/img_res/1ab29eddb82db22b419169808ca2825d.jpg" class="w-10 h-10 rounded-full object-cover" alt="Profile">
+</button>
+<div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2" id="profileMenu">
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+<div class="flex gap-8">
+<div class="w-64 flex-shrink-0">
+<div class="sticky top-24">
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="font-semibold text-gray-900 mb-4">Filters</h3>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Languages</label>
+<div class="space-y-2">
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="language" value="JavaScript">
+<span class="ml-2 text-sm">JavaScript</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="language" value="Python">
+<span class="ml-2 text-sm">Python</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="language" value="Java">
+<span class="ml-2 text-sm">Java</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="language" value="TypeScript">
+<span class="ml-2 text-sm">TypeScript</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="language" value="Dart">
+<span class="ml-2 text-sm">Dart</span>
+</label>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Categories</label>
+<div class="space-y-2">
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="category" value="Web Development">
+<span class="ml-2 text-sm">Web Development</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="category" value="Mobile Apps">
+<span class="ml-2 text-sm">Mobile Apps</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="category" value="Data Science">
+<span class="ml-2 text-sm">Data Science</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="category" value="Machine Learning">
+<span class="ml-2 text-sm">Machine Learning</span>
+</label>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+<div class="space-y-2">
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="difficulty" value="Beginner">
+<span class="ml-2 text-sm">Beginner</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="difficulty" value="Intermediate">
+<span class="ml-2 text-sm">Intermediate</span>
+</label>
+<label class="flex items-center">
+<input type="checkbox" class="rounded text-primary" data-filter="difficulty" value="Advanced">
+<span class="ml-2 text-sm">Advanced</span>
+</label>
+</div>
+</div>
+<div class="pt-4 border-t border-gray-200 mt-4">
+<button id="clearFilters" class="w-full py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button text-sm font-medium whitespace-nowrap">
+Clear All Filters
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-8">
+<h1 class="text-2xl font-bold text-gray-900">Featured Projects</h1>
+<button class="bg-primary text-white px-4 py-2 rounded-button flex items-center space-x-2 hover:bg-primary/90" id="newProjectBtn">
+<i class="ri-add-line"></i>
+<span>New Project</span>
+</button>
+</div>
+<div class="masonry-grid">
+<!-- Projects will be dynamically rendered here -->
+</div>
+</div>
+</div>
+</main>
+<div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center" id="newProjectModal">
+<div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+<div class="p-6">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xl font-semibold text-gray-900">Create New Project</h2>
+<button class="text-gray-400 hover:text-gray-500" id="closeModalBtn">
+<i class="ri-close-line text-xl"></i>
+</button>
+</div>
+<form id="newProjectForm" class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Project Title</label>
+<input type="text" name="title" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Enter project title" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+<textarea name="description" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary h-32" placeholder="Describe your project" required></textarea>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Technologies</label>
+<input type="text" name="technologies" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="e.g. React, Node.js, MongoDB" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Repository URL</label>
+<input type="url" name="repoUrl" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="https://github.com/username/project">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Code Snippet (optional)</label>
+<div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors">
+<div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100">
+<i class="ri-code-line text-2xl text-gray-400"></i>
+</div>
+<p class="text-sm text-gray-500">Upload a code file or drag and drop here</p>
+<input type="file" name="codeFile" class="hidden" accept=".js,.py,.java,.html,.css,.ts,.jsx,.tsx">
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Project Image</label>
+<div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors">
+<div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100">
+<i class="ri-upload-cloud-line text-2xl text-gray-400"></i>
+</div>
+<p class="text-sm text-gray-500">Drag and drop your image here, or click to select</p>
+<input type="file" name="projectImage" class="hidden" accept="image/*">
+</div>
+</div>
+<div class="flex justify-end space-x-4">
+<button type="button" class="px-4 py-2 rounded-button border border-gray-300 text-gray-700 hover:bg-gray-50 whitespace-nowrap" id="cancelProjectBtn">Cancel</button>
+<button type="submit" class="px-4 py-2 rounded-button bg-primary text-white hover:bg-primary/90 whitespace-nowrap">Create Project</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<script>
+// Mock data for projects
+const projectsData = [
+{
+id: 1,
+title: "Admin Dashboard Template",
+description: "A modern admin dashboard template with dark mode support and responsive layout",
+image: "https://public.readdy.ai/ai/img_res/026060c6afeb366a03230c0d2569db88.jpg",
+tags: ["React", "Tailwind CSS", "TypeScript"],
+likes: 128,
+comments: 24,
+liked: false,
+codeSnippet: `import React, { useState, useEffect } from 'react';
+import { ThemeProvider } from './ThemeContext';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import Dashboard from './pages/Dashboard';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  return (
+    <ThemeProvider>
+      <Router>
+        <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+          <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900">
+              <div className="container mx-auto px-6 py-8">
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  {/* Add more routes here */}
+                </Routes>
+              </div>
+            </main>
+          </div>
+        </div>
+      </Router>
+    </ThemeProvider>
+  );
+}
+export default App;`
+},
+{
+id: 2,
+title: "Fitness Tracking App",
+description: "A cross-platform mobile app for tracking workouts and fitness progress",
+image: "https://public.readdy.ai/ai/img_res/22be7eca9e06add601b460ae1e53f7aa.jpg",
+tags: ["Flutter", "Firebase", "Dart"],
+likes: 86,
+comments: 16,
+liked: false,
+codeSnippet: `import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitness_tracker/models/workout.dart';
+import 'package:fitness_tracker/widgets/workout_card.dart';
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+class _HomeScreenState extends State<HomeScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  Stream<List<Workout>> _getWorkouts() {
+    return _firestore
+      .collection('users')
+      .doc(_auth.currentUser!.uid)
+      .collection('workouts')
+      .orderBy('date', descending: true)
+      .snapshots()
+      .map((snapshot) => 
+        snapshot.docs.map((doc) => Workout.fromFirestore(doc)).toList()
+      );
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('My Workouts'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Navigator.pushNamed(context, '/add-workout'),
+          ),
+        ],
+      ),
+      body: StreamBuilder<List<Workout>>(
+        stream: _getWorkouts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No workouts yet. Add one!'));
+          }
+          
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              return WorkoutCard(workout: snapshot.data![index]);
+            },
+          );
+        },
+      ),
+    );
+  }
+}`
+},
+{
+id: 3,
+title: "ML Image Classification",
+description: "Deep learning model for image classification using TensorFlow",
+image: "https://public.readdy.ai/ai/img_res/e358d41c9ae1406035cd7edfced27dfc.jpg",
+tags: ["Python", "TensorFlow", "OpenCV"],
+likes: 192,
+comments: 34,
+liked: false,
+codeSnippet: `import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import matplotlib.pyplot as plt
+import numpy as np
+# Define model architecture
+def create_model():
+    model = models.Sequential([
+        layers.Conv2D(32, (3, 3), activation='relu', input_shape=(150, 150, 3)),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(128, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+        layers.Flatten(),
+        layers.Dense(512, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(5, activation='softmax')  # 5 classes
+    ])
+    
+    model.compile(
+        optimizer='adam',
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    return model
+# Data augmentation and generators
+train_datagen = ImageDataGenerator(
+    rescale=1./255,
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
+test_datagen = ImageDataGenerator(rescale=1./255)
+train_generator = train_datagen.flow_from_directory(
+    'data/train',
+    target_size=(150, 150),
+    batch_size=32,
+    class_mode='categorical'
+)
+validation_generator = test_datagen.flow_from_directory(
+    'data/validation',
+    target_size=(150, 150),
+    batch_size=32,
+    class_mode='categorical'
+)
+# Train model
+model = create_model()
+history = model.fit(
+    train_generator,
+    steps_per_epoch=train_generator.samples // 32,
+    epochs=20,
+    validation_data=validation_generator,
+    validation_steps=validation_generator.samples // 32
+)
+# Save model
+model.save('image_classification_model.h5')`
+}
+];
+// DOM elements
+const profileDropdown = document.getElementById('profileDropdown');
+const profileMenu = document.getElementById('profileMenu');
+const newProjectBtn = document.getElementById('newProjectBtn');
+const newProjectModal = document.getElementById('newProjectModal');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const cancelProjectBtn = document.getElementById('cancelProjectBtn');
+const newProjectForm = document.getElementById('newProjectForm');
+const projectsContainer = document.querySelector('.masonry-grid');
+// Profile dropdown functionality
+profileDropdown.addEventListener('click', () => {
+profileMenu.classList.toggle('hidden');
+});
+document.addEventListener('click', (e) => {
+if (!profileDropdown.contains(e.target)) {
+profileMenu.classList.add('hidden');
+}
+});
+// Modal functionality
+function toggleModal() {
+newProjectModal.classList.toggle('hidden');
+newProjectModal.classList.toggle('flex');
+}
+newProjectBtn.addEventListener('click', toggleModal);
+closeModalBtn.addEventListener('click', toggleModal);
+cancelProjectBtn.addEventListener('click', toggleModal);
+// Form submission
+newProjectForm.addEventListener('submit', (e) => {
+e.preventDefault();
+const formData = new FormData(newProjectForm);
+const title = formData.get('title') || document.querySelector('input[placeholder="Enter project title"]').value;
+const description = formData.get('description') || document.querySelector('textarea').value;
+const technologies = formData.get('technologies') || document.querySelector('input[placeholder="e.g. React, Node.js, MongoDB"]').value;
+if (!title || !description || !technologies) {
+showNotification('Please fill in all required fields', 'error');
+return;
+}
+// Get code file if uploaded
+let codeSnippet = '';
+const codeFileInput = document.querySelector('input[name="codeFile"]');
+if (codeFileInput.files && codeFileInput.files[0]) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    codeSnippet = e.target.result;
+    
+    // Create new project with code snippet
+    createNewProject(title, description, technologies, codeSnippet);
+  };
+  reader.readAsText(codeFileInput.files[0]);
+} else {
+  // Create new project without code snippet
+  createNewProject(title, description, technologies, '');
+}
+});
+// Helper function to create a new project
+function createNewProject(title, description, technologies, codeSnippet) {
+  // Create new project
+  const newProject = {
+    id: projectsData.length + 1,
+    title: title,
+    description: description,
+    image: "https://readdy.ai/api/search-image?query=software development project with code editor and modern application interface, professional programming environment&width=400&height=300&flag=eebc23427332dde11537213da6e396cd&seq=" + (projectsData.length + 10) + "&orientation=landscape",
+    tags: technologies.split(',').map(tag => tag.trim()),
+    likes: 0,
+    comments: 0,
+    liked: false,
+    codeSnippet: codeSnippet
+  };
+  
+  // Add to data
+  projectsData.unshift(newProject);
+  
+  // Render projects
+  renderProjects();
+  
+  // Reset form and close modal
+  newProjectForm.reset();
+  
+  // Remove any file upload previews
+  const fileUploadContainer = document.querySelector('.border-dashed');
+  const existingPreview = fileUploadContainer.querySelector('.relative');
+  if (existingPreview) {
+    fileUploadContainer.removeChild(existingPreview);
+  }
+  
+  // Remove any code file upload previews
+  const codeUploadContainer = document.querySelector('input[name="codeFile"]').closest('.border-dashed');
+  const existingCodePreview = codeUploadContainer.querySelector('.code-preview');
+  if (existingCodePreview) {
+    codeUploadContainer.removeChild(existingCodePreview);
+  }
+  
+  toggleModal();
+  showNotification('Project created successfully!', 'success');
+}
+// Like functionality
+function handleLikeClick(projectId) {
+const project = projectsData.find(p => p.id === projectId);
+if (project) {
+project.liked = !project.liked;
+project.likes = project.liked ? project.likes + 1 : project.likes - 1;
+renderProjects();
+}
+}
+// Filter functionality
+const filterCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+filterCheckboxes.forEach(checkbox => {
+checkbox.addEventListener('change', () => {
+renderProjects();
+});
+});
+// Search functionality
+const searchInput = document.querySelector('input[placeholder="Search projects..."]');
+searchInput.addEventListener('input', () => {
+renderProjects();
+});
+// Notification system
+function showNotification(message, type = 'info') {
+const notification = document.createElement('div');
+notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'} transition-opacity duration-300`;
+notification.textContent = message;
+document.body.appendChild(notification);
+setTimeout(() => {
+notification.style.opacity = '0';
+setTimeout(() => {
+document.body.removeChild(notification);
+}, 300);
+}, 3000);
+}
+// Render projects based on filters and search
+function renderProjects() {
+// Get selected filters
+const selectedLanguages = Array.from(document.querySelectorAll('input[type="checkbox"]'))
+.filter(cb => cb.checked && cb.nextElementSibling.textContent.trim() in ['JavaScript', 'Python', 'Java', 'Flutter', 'Dart'])
+.map(cb => cb.nextElementSibling.textContent.trim());
+const selectedCategories = Array.from(document.querySelectorAll('input[type="checkbox"]'))
+.filter(cb => cb.checked && cb.nextElementSibling.textContent.trim() in ['Web Development', 'Mobile Apps', 'Data Science'])
+.map(cb => cb.nextElementSibling.textContent.trim());
+const searchTerm = searchInput.value.toLowerCase();
+// Filter projects
+let filteredProjects = [...projectsData];
+if (searchTerm) {
+filteredProjects = filteredProjects.filter(project =>
+project.title.toLowerCase().includes(searchTerm) ||
+project.description.toLowerCase().includes(searchTerm) ||
+project.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+);
+}
+if (selectedLanguages.length > 0) {
+filteredProjects = filteredProjects.filter(project =>
+project.tags.some(tag => selectedLanguages.includes(tag))
+);
+}
+// Clear container
+projectsContainer.innerHTML = '';
+// Render projects
+filteredProjects.forEach(project => {
+const projectElement = document.createElement('div');
+projectElement.className = 'masonry-item';
+projectElement.innerHTML = `
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+<img src="${project.image}" alt="Project preview" class="w-full h-48 object-cover">
+<div class="p-6">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-lg font-semibold text-gray-900">${project.title}</h3>
+<p class="text-sm text-gray-500 mt-1">${project.description}</p>
+</div>
+<button class="text-gray-400 hover:text-gray-500 project-menu" data-id="${project.id}">
+<i class="ri-more-2-fill"></i>
+</button>
+</div>
+<div class="flex flex-wrap gap-2 mt-4">
+${project.tags.map(tag => `
+<span class="px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs">${tag}</span>
+`).join('')}
+</div>
+<div class="flex items-center justify-between mt-6">
+<div class="flex items-center space-x-4">
+<button class="flex items-center space-x-1 text-gray-500 hover:text-gray-600 like-button" data-id="${project.id}">
+<i class="ri-heart-${project.liked ? 'fill text-red-500' : 'line'}"></i>
+<span class="text-sm">${project.likes}</span>
+</button>
+<button class="flex items-center space-x-1 text-gray-500 hover:text-gray-600">
+<i class="ri-chat-1-line"></i>
+<span class="text-sm">${project.comments}</span>
+</button>
+</div>
+<div class="flex items-center space-x-2">
+<button class="text-primary hover:text-primary/90 text-sm font-medium view-code-btn" data-id="${project.id}">View Code</button>
+<i class="ri-arrow-right-line text-primary"></i>
+</div>
+</div>
+</div>
+</div>
+`;
+projectsContainer.appendChild(projectElement);
+});
+// Add event listeners to like buttons
+document.querySelectorAll('.like-button').forEach(button => {
+button.addEventListener('click', () => {
+const projectId = parseInt(button.getAttribute('data-id'));
+handleLikeClick(projectId);
+});
+});
+// Add event listeners to project menu buttons
+document.querySelectorAll('.project-menu').forEach(button => {
+button.addEventListener('click', (e) => {
+const projectId = parseInt(button.getAttribute('data-id'));
+showProjectMenu(e, projectId);
+});
+});
+// Show message if no projects
+if (filteredProjects.length === 0) {
+const noResults = document.createElement('div');
+noResults.className = 'col-span-3 py-16 text-center';
+noResults.innerHTML = `
+<div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100">
+<i class="ri-search-line text-3xl text-gray-400"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-1">No projects found</h3>
+<p class="text-gray-500">Try adjusting your search or filters</p>
+`;
+projectsContainer.appendChild(noResults);
+}
+}
+// Project menu
+function showProjectMenu(event, projectId) {
+event.stopPropagation();
+// Remove any existing menus
+const existingMenu = document.querySelector('.project-context-menu');
+if (existingMenu) {
+document.body.removeChild(existingMenu);
+}
+// Create menu
+const menu = document.createElement('div');
+menu.className = 'project-context-menu absolute bg-white rounded-lg shadow-lg py-2 z-50 w-48';
+menu.style.top = `${event.clientY}px`;
+menu.style.left = `${event.clientX}px`;
+menu.innerHTML = `
+<button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 edit-project" data-id="${projectId}">Edit Project</button>
+<button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 share-project" data-id="${projectId}">Share Project</button>
+<button class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 delete-project" data-id="${projectId}">Delete Project</button>
+`;
+document.body.appendChild(menu);
+// Position menu to ensure it's visible
+const menuRect = menu.getBoundingClientRect();
+if (menuRect.right > window.innerWidth) {
+menu.style.left = `${window.innerWidth - menuRect.width - 10}px`;
+}
+if (menuRect.bottom > window.innerHeight) {
+menu.style.top = `${window.innerHeight - menuRect.height - 10}px`;
+}
+// Add event listeners
+menu.querySelector('.edit-project').addEventListener('click', () => {
+showNotification('Edit functionality would open here', 'info');
+document.body.removeChild(menu);
+});
+menu.querySelector('.share-project').addEventListener('click', () => {
+showNotification('Share functionality would open here', 'info');
+document.body.removeChild(menu);
+});
+menu.querySelector('.delete-project').addEventListener('click', () => {
+const index = projectsData.findIndex(p => p.id === projectId);
+if (index !== -1) {
+projectsData.splice(index, 1);
+renderProjects();
+showNotification('Project deleted successfully', 'success');
+}
+document.body.removeChild(menu);
+});
+// Close menu when clicking elsewhere
+document.addEventListener('click', function closeMenu() {
+if (document.body.contains(menu)) {
+document.body.removeChild(menu);
+}
+document.removeEventListener('click', closeMenu);
+});
+}
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+renderProjects();
+// Add name attributes to form inputs
+document.querySelector('input[placeholder="Enter project title"]').setAttribute('name', 'title');
+document.querySelector('textarea').setAttribute('name', 'description');
+document.querySelector('input[placeholder="e.g. React, Node.js, MongoDB"]').setAttribute('name', 'technologies');
+// Image upload preview
+const fileUploadContainers = document.querySelectorAll('.border-dashed');
+fileUploadContainers.forEach(container => {
+  const fileInput = container.querySelector('input[type="file"]');
+  if (!fileInput) return;
+  
+  container.addEventListener('click', () => {
+    fileInput.click();
+  });
+  
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      
+      if (fileInput.name === 'projectImage') {
+        reader.onload = function(e) {
+          // Create image preview
+          const preview = document.createElement('div');
+          preview.className = 'relative mt-4';
+          preview.innerHTML = `
+            <img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg" />
+            <button type="button" class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md remove-preview">
+              <i class="ri-close-line text-gray-500"></i>
+            </button>
+          `;
+          
+          // Remove existing preview if any
+          const existingPreview = container.querySelector('.relative');
+          if (existingPreview) {
+            container.removeChild(existingPreview);
+          }
+          
+          container.appendChild(preview);
+          
+          // Add remove button functionality
+          preview.querySelector('.remove-preview').addEventListener('click', (e) => {
+            e.stopPropagation();
+            container.removeChild(preview);
+            fileInput.value = '';
+          });
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      } else if (fileInput.name === 'codeFile') {
+        reader.onload = function(e) {
+          // Create code preview
+          const preview = document.createElement('div');
+          preview.className = 'code-preview relative mt-4 bg-gray-100 rounded-lg p-4 text-left';
+          
+          const fileName = e.target.files[0].name;
+          const fileExtension = fileName.split('.').pop().toLowerCase();
+          const fileIcon = getFileIcon(fileExtension);
+          
+          preview.innerHTML = `
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center">
+                <i class="${fileIcon} text-gray-700 mr-2"></i>
+                <span class="text-sm font-medium">${fileName}</span>
+              </div>
+              <button type="button" class="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm remove-preview">
+                <i class="ri-close-line text-gray-500"></i>
+              </button>
+            </div>
+            <div class="text-xs text-gray-600 overflow-hidden max-h-24">
+              <pre class="whitespace-pre-wrap">${e.target.result.substring(0, 200)}${e.target.result.length > 200 ? '...' : ''}</pre>
+            </div>
+          `;
+          
+          // Remove existing preview if any
+          const existingPreview = container.querySelector('.code-preview');
+          if (existingPreview) {
+            container.removeChild(existingPreview);
+          }
+          
+          container.appendChild(preview);
+          
+          // Add remove button functionality
+          preview.querySelector('.remove-preview').addEventListener('click', (e) => {
+            e.stopPropagation();
+            container.removeChild(preview);
+            fileInput.value = '';
+          });
+        };
+        reader.readAsText(e.target.files[0]);
+      }
+    }
+  });
+  
+  // Drag and drop functionality
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    container.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+  
+  container.addEventListener('dragover', () => {
+    container.classList.add('border-primary');
+  });
+  
+  container.addEventListener('dragleave', () => {
+    container.classList.remove('border-primary');
+  });
+  
+  container.addEventListener('drop', (e) => {
+    container.classList.remove('border-primary');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      fileInput.files = e.dataTransfer.files;
+      const event = new Event('change');
+      fileInput.dispatchEvent(event);
+    }
+  });
+});
+// Helper function to get file icon based on extension
+function getFileIcon(extension) {
+  const iconMap = {
+    'js': 'ri-javascript-line',
+    'jsx': 'ri-javascript-line',
+    'ts': 'ri-typescript-line',
+    'tsx': 'ri-typescript-line',
+    'py': 'ri-python-line',
+    'java': 'ri-code-line',
+    'html': 'ri-html5-line',
+    'css': 'ri-css3-line'
+  };
+  
+  return iconMap[extension] || 'ri-file-code-line';
+}
+// Add event listeners for view code buttons
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('view-code-btn') || e.target.closest('.view-code-btn')) {
+    const button = e.target.classList.contains('view-code-btn') ? e.target : e.target.closest('.view-code-btn');
+    const projectId = parseInt(button.getAttribute('data-id'));
+    showCodeViewer(projectId);
+  }
+});
+});
+// Function to show code viewer modal
+function showCodeViewer(projectId) {
+  const project = projectsData.find(p => p.id === projectId);
+  if (!project || !project.codeSnippet) {
+    showNotification('No code available for this project', 'info');
+    return;
+  }
+  
+  // Create modal if it doesn't exist
+  let codeViewerModal = document.getElementById('codeViewerModal');
+  if (!codeViewerModal) {
+    codeViewerModal = document.createElement('div');
+    codeViewerModal.id = 'codeViewerModal';
+    codeViewerModal.className = 'fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50';
+    document.body.appendChild(codeViewerModal);
+  }
+  
+  // Determine language for syntax highlighting
+  let language = 'javascript';
+  if (project.tags.includes('Python')) language = 'python';
+  else if (project.tags.includes('Java')) language = 'java';
+  else if (project.tags.includes('Dart')) language = 'dart';
+  
+  // Update modal content
+  codeViewerModal.innerHTML = `
+    <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+        <div class="flex items-center">
+          <i class="ri-code-line text-primary mr-2"></i>
+          <h2 class="text-lg font-semibold text-gray-900">${project.title} - Code</h2>
+        </div>
+        <button class="text-gray-400 hover:text-gray-500" id="closeCodeViewerBtn">
+          <i class="ri-close-line text-xl"></i>
+        </button>
+      </div>
+      <div class="flex-1 overflow-auto">
+        <pre class="p-6 bg-gray-50 text-sm text-gray-800 overflow-auto whitespace-pre-wrap">${project.codeSnippet}</pre>
+      </div>
+      <div class="p-4 border-t border-gray-200 flex justify-end">
+        <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button text-sm font-medium whitespace-nowrap" id="copyCodeBtn">
+          <i class="ri-file-copy-line mr-1"></i> Copy Code
+        </button>
+      </div>
+    </div>
+  `;
+  
+  // Show modal
+  codeViewerModal.classList.remove('hidden');
+  codeViewerModal.classList.add('flex');
+  
+  // Add event listeners
+  document.getElementById('closeCodeViewerBtn').addEventListener('click', () => {
+    codeViewerModal.classList.add('hidden');
+    codeViewerModal.classList.remove('flex');
+  });
+  
+  document.getElementById('copyCodeBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(project.codeSnippet)
+      .then(() => {
+        showNotification('Code copied to clipboard', 'success');
+      })
+      .catch(err => {
+        showNotification('Failed to copy code', 'error');
+      });
+  });
+}
+</script>
+</body>
+</html>
